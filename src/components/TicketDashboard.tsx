@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { Emergency, EmergencyFilters } from '../types/ticket';
-import { EmergencyService } from '../services/ticketService';
+import { getEmergencies, updateEmergencyStatus } from '../services/ticketService';
 import { EmergencyCard } from './TicketCard';
 import { EmergencyFiltersComponent } from './TicketFilters';
 import { EmergencyPopup } from './EmergencyPopup';
@@ -26,7 +26,7 @@ export function EmergencyDashboard() {
     error,
   } = useQuery({
     queryKey: ['emergencies', filters],
-    queryFn: () => EmergencyService.getEmergencies(filters),
+    queryFn: () => getEmergencies(filters),
     refetchInterval: 5000,
   });
 
@@ -65,7 +65,7 @@ export function EmergencyDashboard() {
 
   const handleStatusChange = async (emergencyId: string, newStatus: Emergency['status']) => {
     try {
-      await EmergencyService.updateEmergencyStatus(emergencyId, newStatus);
+      await updateEmergencyStatus(emergencyId, newStatus);
       // Update the local state
       setEmergencies(prevEmergencies =>
         prevEmergencies.map(emergency =>
