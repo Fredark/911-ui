@@ -61,11 +61,11 @@ export const getEmergencies = async (filters?: EmergencyFilters): Promise<Emerge
         level: mapUrgencyLevel(item.urgency_level || 3),
         status: 'ATIVO', // ou outro status se disponível
         responsible: responsible,
-        location: item.location || 'Local não informado',
         victim: item.victim || undefined,
         createdAt: item.timestamp || item.createdAt || new Date().toISOString(),
         updatedAt: item.updatedAt || item.timestamp || item.createdAt || new Date().toISOString(),
-        reporter: item.reporter || 'Não informado'
+        reporter: item.reporter || 'Não informado',
+        confidenceLevel: 'DESCONHECIDO',
       };
     });
   } catch (error) {

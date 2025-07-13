@@ -40,10 +40,10 @@ export function backendToEmergency(
     level: mapUrgencyLevel(backend.urgency_level),
     status: 'ATIVO', // ou outro status inicial
     responsible: mapEmergencyType(backend.emergency_type),
-    location: backend.location || 'Desconhecido',
     victim: backend.victim || undefined,
     createdAt: backend.timestamp || new Date().toISOString(),
     updatedAt: backend.timestamp || new Date().toISOString(),
     reporter: backend.reporter || 'Desconhecido',
+    confidenceLevel: 'DESCONHECIDO',
   };
 } 
