@@ -106,7 +106,6 @@ export function EmergencyPopup({ emergency, onClose, autoClose = false }: Emerge
         </div>
         
         <div className="text-xs text-gray-400">
-          <p><span className="font-semibold">Local:</span> <span className="break-words whitespace-pre-line">{emergency.location}</span></p>
           {emergency.victim && (
             <p><span className="font-semibold">Vítima:</span> <span className="break-words whitespace-pre-line">{emergency.victim}</span></p>
           )}

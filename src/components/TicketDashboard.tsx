@@ -82,6 +82,17 @@ export function EmergencyDashboard() {
     setFilters(newFilters);
   };
 
+  const handleStatClick = (status: Emergency['status'] | null) => {
+    if (status) {
+      setFilters(prev => ({ ...prev, status }));
+    } else {
+      setFilters(prev => {
+        const { status, ...rest } = prev;
+        return rest;
+      });
+    }
+  };
+
   const closePopup = (emergencyId: string) => {
     setPopups(prev => prev.filter(p => p.id !== emergencyId));
   };
@@ -92,18 +103,12 @@ export function EmergencyDashboard() {
     return Array.from(uniqueResponsibles).sort();
   }, [emergencies]);
 
-  const locations = useMemo(() => {
-    const uniqueLocations = new Set(emergencies.map(emergency => emergency.location));
-    return Array.from(uniqueLocations).sort();
-  }, [emergencies]);
-
   // Filter emergencies based on current filters
   const filteredEmergencies = useMemo(() => {
     return emergencies.filter(emergency => {
       if (filters.status && emergency.status !== filters.status) return false;
       if (filters.level && emergency.level !== filters.level) return false;
       if (filters.responsible && emergency.responsible !== filters.responsible) return false;
-      if (filters.location && emergency.location !== filters.location) return false;
       return true;
     });
   }, [emergencies, filters]);
@@ -177,7 +182,6 @@ export function EmergencyDashboard() {
             filters={filters}
             onFiltersChange={handleFiltersChange}
             responsibles={responsibles}
-            locations={locations}
           />
         </div>
 
@@ -222,7 +226,6 @@ export function EmergencyDashboard() {
                     filters={filters}
                     onFiltersChange={handleFiltersChange}
                     responsibles={responsibles}
-                    locations={locations}
                   />
                 </Dialog.Panel>
               </Transition.Child>
@@ -235,57 +238,112 @@ export function EmergencyDashboard() {
         <div className="flex-1 p-2 md:p-6 overflow-y-auto">
           <div className="mb-6">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-                  </svg>
-                  <div className="text-xl font-bold text-white">{stats.total}</div>
-                </div>
-                <div className="text-xs font-medium text-gray-300">Total</div>
-              </div>
-              
-              <div className="bg-purple-900 border border-purple-700 rounded-lg p-3 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <div className="text-xl font-bold text-purple-200">{stats.ativo}</div>
-                </div>
-                <div className="text-xs font-medium text-purple-300">Ativo</div>
-              </div>
-              
-              <div className="bg-yellow-900 border border-yellow-700 rounded-lg p-3 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                  </svg>
-                  <div className="text-xl font-bold text-yellow-200">{stats.emAndamento}</div>
-                </div>
-                <div className="text-xs font-medium text-yellow-300">Em Andamento</div>
-              </div>
-              
-              <div className="bg-green-900 border border-green-700 rounded-lg p-3 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <div className="text-xl font-bold text-green-200">{stats.resolvido}</div>
-                </div>
-                <div className="text-xs font-medium text-green-300">Resolvido</div>
-              </div>
-              
-              <div className="bg-blue-900 border border-blue-700 rounded-lg p-3 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <div className="text-xl font-bold text-blue-200">{stats.finalizado}</div>
-                </div>
-                <div className="text-xs font-medium text-blue-300">Finalizado</div>
+                <button 
+                  type="button"
+                  className="bg-gray-800 border border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:bg-gray-700 transition-colors"
+                  onClick={() => handleStatClick(null)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleStatClick(null);
+                    }
+                  }}
+                  title="Mostrar todas as ocorrências"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <div className="text-xl font-bold text-white">{stats.total}</div>
+                  </div>
+                  <div className="text-xs font-medium text-gray-300">Total</div>
+                </button>
+                
+                <button 
+                  type="button"
+                  className="bg-purple-900 border border-purple-700 rounded-lg p-3 text-center cursor-pointer hover:bg-purple-800 transition-colors"
+                  onClick={() => handleStatClick('ATIVO')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleStatClick('ATIVO');
+                    }
+                  }}
+                  title="Filtrar por ocorrências ativas"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <div className="text-xl font-bold text-purple-200">{stats.ativo}</div>
+                  </div>
+                  <div className="text-xs font-medium text-purple-300">Ativo</div>
+                </button>
+                
+                <button 
+                  type="button"
+                  className="bg-yellow-900 border border-yellow-700 rounded-lg p-3 text-center cursor-pointer hover:bg-yellow-800 transition-colors"
+                  onClick={() => handleStatClick('EM_ANDAMENTO')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleStatClick('EM_ANDAMENTO');
+                    }
+                  }}
+                  title="Filtrar por ocorrências em andamento"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    <div className="text-xl font-bold text-yellow-200">{stats.emAndamento}</div>
+                  </div>
+                  <div className="text-xs font-medium text-yellow-300">Em Andamento</div>
+                </button>
+                
+                <button 
+                  type="button"
+                  className="bg-green-900 border border-green-700 rounded-lg p-3 text-center cursor-pointer hover:bg-green-800 transition-colors"
+                  onClick={() => handleStatClick('RESOLVIDO')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleStatClick('RESOLVIDO');
+                    }
+                  }}
+                  title="Filtrar por ocorrências resolvidas"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <div className="text-xl font-bold text-green-200">{stats.resolvido}</div>
+                  </div>
+                  <div className="text-xs font-medium text-green-300">Resolvido</div>
+                </button>
+                
+                <button 
+                  type="button"
+                  className="bg-gray-900 border border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:bg-gray-800 transition-colors"
+                  onClick={() => handleStatClick('FINALIZADO')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleStatClick('FINALIZADO');
+                    }
+                  }}
+                  title="Filtrar por ocorrências finalizadas"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <div className="text-xl font-bold text-gray-200">{stats.finalizado}</div>
+                  </div>
+                  <div className="text-xs font-medium text-gray-300">Finalizado</div>
+                </button>
               </div>
             </div>
-          </div>
 
           {isLoading && !initialized ? (
             <div className="flex flex-col items-center justify-center py-12">

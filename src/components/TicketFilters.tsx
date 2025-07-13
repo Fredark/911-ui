@@ -4,10 +4,9 @@ interface EmergencyFiltersProps {
   filters: EmergencyFilters;
   onFiltersChange: (filters: EmergencyFilters) => void;
   responsibles: string[];
-  locations: string[];
 }
 
-export function EmergencyFiltersComponent({ filters, onFiltersChange, responsibles, locations }: EmergencyFiltersProps) {
+export function EmergencyFiltersComponent({ filters, onFiltersChange, responsibles }: EmergencyFiltersProps) {
   const handleFilterChange = (key: keyof EmergencyFilters, value: string) => {
     const newFilters = {
       ...filters,
@@ -112,33 +111,6 @@ export function EmergencyFiltersComponent({ filters, onFiltersChange, responsibl
               <option value="">Todos os Responsáveis</option>
               {responsibles.map(responsible => (
                 <option key={responsible} value={responsible}>{responsible}</option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <label htmlFor="location-filter" className="flex items-center gap-2 text-sm font-semibold text-gray-300">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-            </svg>
-            Localização
-          </label>
-          <div className="relative">
-            <select
-              id="location-filter"
-              value={filters.location || ''}
-              onChange={(e) => handleFilterChange('location', e.target.value)}
-              className="appearance-none w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-gray-500 transition-colors cursor-pointer pr-8"
-            >
-              <option value="">Todas as Localizações</option>
-              {locations.map(location => (
-                <option key={location} value={location}>{location}</option>
               ))}
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">

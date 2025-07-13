@@ -22,10 +22,12 @@ const mapStatus = (status: string): Emergency['status'] => {
 
 // Função para mapear emergency_type para responsável
 const mapEmergencyType = (types: string[]): string => {
+  console.log('Mapping emergency_type:', types);
   if (!Array.isArray(types)) return 'Não definido';
   if (types.includes('samu')) return 'SAMU';
   if (types.includes('bombeiros')) return 'Bombeiros';
   if (types.includes('policia')) return 'Polícia';
+  console.log('No specific mapping found, returning:', types.join(', '));
   return types.join(', ');
 };
 
@@ -58,19 +60,24 @@ export const getEmergencies = async (filters?: EmergencyFilters): Promise<Emerge
     }
     
     // Mapear os dados da API para o formato esperado pelo frontend
-    return ocorrencias.map((item: any) => ({
-      id: item.id || String(Math.random()),
-      title: item.situation || 'Ocorrência',
-      description: item.situation || 'Sem descrição',
-      level: mapUrgencyLevel(item.urgency_level || 3),
-      status: 'ATIVO', // ou outro status se disponível
-      responsible: mapEmergencyType(item.emergency_type),
-      location: item.location || 'Local não informado',
-      victim: item.victim || undefined,
-      createdAt: item.timestamp || item.createdAt || new Date().toISOString(),
-      updatedAt: item.updatedAt || item.timestamp || item.createdAt || new Date().toISOString(),
-      reporter: item.reporter || 'Não informado'
-    }));
+    return ocorrencias.map((item: any) => {
+      console.log('Processing item:', item);
+      const responsible = mapEmergencyType(item.emergency_type);
+      console.log('Mapped responsible:', responsible);
+      return {
+        id: item.id || String(Math.random()),
+        title: item.situation || 'Ocorrência',
+        description: item.situation || 'Sem descrição',
+        level: mapUrgencyLevel(item.urgency_level || 3),
+        status: 'ATIVO', // ou outro status se disponível
+        responsible: responsible,
+        location: item.location || 'Local não informado',
+        victim: item.victim || undefined,
+        createdAt: item.timestamp || item.createdAt || new Date().toISOString(),
+        updatedAt: item.updatedAt || item.timestamp || item.createdAt || new Date().toISOString(),
+        reporter: item.reporter || 'Não informado'
+      };
+    });
   } catch (error) {
     console.error('Error fetching emergencies:', error);
     throw error;

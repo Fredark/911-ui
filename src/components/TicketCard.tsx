@@ -141,16 +141,6 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-            </svg>
-            <div className="min-w-0 flex-1">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Localização</span>
-              <p className="text-sm font-medium text-white break-words whitespace-pre-line">{emergency.location}</p>
-            </div>
-          </div>
-          
           {emergency.victim && (
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
