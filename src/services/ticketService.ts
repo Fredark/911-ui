@@ -39,6 +39,12 @@ export const getEmergencies = async (filters?: EmergencyFilters): Promise<Emerge
     
     const data = await response.json();
     
+    // Verificar se data é um array
+    if (!Array.isArray(data)) {
+      console.error('API response is not an array:', data);
+      return [];
+    }
+    
     // Mapear os dados da API para o formato esperado pelo frontend
     return data.map((item: any) => ({
       id: item.id || String(Math.random()),
