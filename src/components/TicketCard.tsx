@@ -8,17 +8,18 @@ interface EmergencyCardProps {
 export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps) {
   const getLevelColor = (level: Emergency['level']) => {
     switch (level) {
-      case 'CRÍTICO': return 'bg-red-600 border-red-500';
-      case 'ALTO': return 'bg-orange-600 border-orange-500';
-      case 'MÉDIO': return 'bg-yellow-600 border-yellow-500';
-      case 'BAIXO': return 'bg-blue-600 border-blue-500';
-      default: return 'bg-gray-600 border-gray-500';
+      case 'CRÍTICA': return 'bg-red-600 border-red-500 text-red-100';
+      case 'ALTA': return 'bg-orange-600 border-orange-500 text-orange-100';
+      case 'MÉDIA': return 'bg-yellow-500 border-yellow-400 text-yellow-900';
+      case 'BAIXA': return 'bg-blue-600 border-blue-500 text-blue-100';
+      case 'MÍNIMA': return 'bg-gray-600 border-gray-500 text-gray-200';
+      default: return 'bg-gray-600 border-gray-500 text-gray-200';
     }
   };
 
   const getStatusColor = (status: Emergency['status']) => {
     switch (status) {
-      case 'ATIVO': return 'bg-red-600 border-red-500';
+      case 'ATIVO': return 'bg-blue-700 border-blue-500 text-blue-100';
       case 'EM_ANDAMENTO': return 'bg-yellow-600 border-yellow-500';
       case 'RESOLVIDO': return 'bg-green-600 border-green-500';
       case 'FINALIZADO': return 'bg-gray-600 border-gray-500';
@@ -28,24 +29,30 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
 
   const getLevelIcon = (level: Emergency['level']) => {
     switch (level) {
-      case 'CRÍTICO': return (
+      case 'CRÍTICA': return (
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
         </svg>
       );
-      case 'ALTO': return (
+      case 'ALTA': return (
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
         </svg>
       );
-      case 'MÉDIO': return (
+      case 'MÉDIA': return (
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
         </svg>
       );
-      case 'BAIXO': return (
+      case 'BAIXA': return (
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+        </svg>
+      );
+      case 'MÍNIMA': return (
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <circle cx="10" cy="10" r="8" fill="#9ca3af" />
+          <text x="10" y="15" textAnchor="middle" fontSize="10" fill="#fff">i</text>
         </svg>
       );
       default: return (
@@ -87,13 +94,11 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -109,18 +114,18 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
           {emergency.title}
         </h3>
         <div className="flex justify-center gap-2 flex-wrap">
-          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold text-white uppercase tracking-wide border ${getLevelColor(emergency.level)}`}>
+          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold uppercase tracking-wide border ${getLevelColor(emergency.level)}`}>
             {getLevelIcon(emergency.level)}
             {emergency.level}
           </span>
-          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold text-white uppercase tracking-wide border ${getStatusColor(emergency.status)}`}>
+          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold uppercase tracking-wide border ${getStatusColor(emergency.status)}`}>
             {getStatusIcon(emergency.status)}
             {emergency.status.replace('_', ' ')}
           </span>
         </div>
       </div>
       
-      <p className="text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3">
+      <p className="text-gray-300 text-sm leading-relaxed mb-4 whitespace-pre-line break-words">
         {emergency.description}
       </p>
       
@@ -132,7 +137,7 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
             </svg>
             <div className="min-w-0 flex-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Responsável</span>
-              <p className="text-sm font-medium text-white truncate">{emergency.responsible}</p>
+              <p className="text-sm font-medium text-white break-words whitespace-pre-line">{emergency.responsible}</p>
             </div>
           </div>
           
@@ -142,7 +147,7 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
             </svg>
             <div className="min-w-0 flex-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Localização</span>
-              <p className="text-sm font-medium text-white truncate">{emergency.location}</p>
+              <p className="text-sm font-medium text-white break-words whitespace-pre-line">{emergency.location}</p>
             </div>
           </div>
           
@@ -153,7 +158,7 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
               </svg>
               <div className="min-w-0 flex-1">
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Vítima(s)</span>
-                <p className="text-sm font-medium text-white truncate">{emergency.victim}</p>
+                <p className="text-sm font-medium text-white break-words whitespace-pre-line">{emergency.victim}</p>
               </div>
             </div>
           )}
@@ -166,7 +171,7 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
             </svg>
             <div className="min-w-0 flex-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Reporter</span>
-              <p className="text-sm font-medium text-white truncate">{emergency.reporter}</p>
+              <p className="text-sm font-medium text-white break-words whitespace-pre-line">{emergency.reporter}</p>
             </div>
           </div>
           

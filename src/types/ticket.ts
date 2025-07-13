@@ -2,7 +2,7 @@ export interface Emergency {
   id: string;
   title: string;
   description: string;
-  level: 'CRÍTICO' | 'ALTO' | 'MÉDIO' | 'BAIXO';
+  level: 'CRÍTICA' | 'ALTA' | 'MÉDIA' | 'BAIXA' | 'MÍNIMA';
   status: 'ATIVO' | 'EM_ANDAMENTO' | 'RESOLVIDO' | 'FINALIZADO';
   responsible: string;
   location: string;

@@ -14,10 +14,11 @@ export interface BackendEmergency {
 
 // Mapeamento de nível numérico para string
 function mapUrgencyLevel(level: number): Emergency['level'] {
-  if (level >= 5) return 'CRÍTICO';
-  if (level === 4) return 'ALTO';
-  if (level === 3) return 'MÉDIO';
-  return 'BAIXO';
+  if (level >= 5) return 'CRÍTICA';
+  if (level === 4) return 'ALTA';
+  if (level === 3) return 'MÉDIA';
+  if (level === 2) return 'BAIXA';
+  return 'MÍNIMA';
 }
 
 // Mapeamento de tipo de emergência para responsável

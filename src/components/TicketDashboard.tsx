@@ -5,12 +5,17 @@ import { EmergencyService } from '../services/ticketService';
 import { EmergencyCard } from './TicketCard';
 import { EmergencyFiltersComponent } from './TicketFilters';
 import { EmergencyPopup } from './EmergencyPopup';
+import { Fragment } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+
+const LOCAL_STORAGE_KEY = 'emergencies_seen_ids';
 
 export function EmergencyDashboard() {
   const [filters, setFilters] = useState<EmergencyFilters>({});
   const [popups, setPopups] = useState<Emergency[]>([]);
   const [emergencies, setEmergencies] = useState<Emergency[]>([]);
   const [initialized, setInitialized] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Fetch emergencies with react-query polling
   const {
@@ -25,18 +30,33 @@ export function EmergencyDashboard() {
     refetchInterval: 5000,
   });
 
-  // Update emergencies and popups when fetchedEmergencies changes
+  // Recupera IDs já vistos do localStorage
+  useEffect(() => {
+    if (initialized && emergencies.length > 0) {
+      const seenIds = emergencies.map(e => e.id);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(seenIds));
+    }
+  }, [initialized, emergencies]);
+
+  // Atualiza popups apenas para emergências realmente novas
   useEffect(() => {
     if (fetchedEmergencies) {
       setInitialized(true);
+      // Recupera IDs já vistos do localStorage
+      const seenIds: string[] = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
       setEmergencies(prevEmergencies => {
-        // Detect new emergencies
+        // Detecta emergências realmente novas
         const newEmergencies = fetchedEmergencies.filter((newEmergency: Emergency) =>
           !prevEmergencies.some((existing: Emergency) => existing.id === newEmergency.id)
         );
-        // Show popup for new emergencies
+        // Só mostra popup para emergências que não estão no localStorage
         newEmergencies.forEach((emergency: Emergency) => {
-          setPopups(prev => [...prev, emergency]);
+          if (!seenIds.includes(emergency.id)) {
+            setPopups(prev => [...prev, emergency]);
+            // Adiciona o ID ao localStorage
+            const updatedSeen = [...seenIds, emergency.id];
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedSeen));
+          }
         });
         return fetchedEmergencies;
       });
@@ -117,28 +137,42 @@ export function EmergencyDashboard() {
   return (
     <div className="h-screen bg-gray-900 flex flex-col overflow-hidden">
       {/* Popup notifications */}
-      <div className="fixed top-4 right-4 z-50 space-y-4">
+      <div className="fixed bottom-4 right-4 flex flex-col items-end z-50" style={{ pointerEvents: 'none' }}>
         {popups.map((emergency, index) => (
-          <EmergencyPopup
+          <div
             key={`${emergency.id}-${index}`}
-            emergency={emergency}
-            onClose={() => closePopup(emergency.id)}
-            autoClose={true}
-          />
+            className={index !== 0 ? '-mt-8' : ''}
+            style={{ zIndex: 100 + index, pointerEvents: 'auto' }}
+          >
+            <EmergencyPopup
+              emergency={emergency}
+              onClose={() => closePopup(emergency.id)}
+              autoClose={true}
+            />
+          </div>
         ))}
       </div>
 
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-700 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-white">Dashboard de Emergências</h1>
-        </div>
+      <div className="px-6 py-4 border-b border-gray-700 flex-shrink-0 flex items-center gap-3">
+        {/* Botão de abrir filtros no mobile */}
+        <button
+          type="button"
+          className="md:hidden inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          Filtros
+        </button>
+        <h1 className="text-2xl font-bold text-white">🚨 Emergências</h1>
       </div>
 
       {/* Main content with sidebar */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Filters only */}
-        <div className="w-64 bg-gray-800 border-r border-gray-700 p-6 overflow-y-auto flex-shrink-0">
+        {/* Sidebar fixa em telas grandes */}
+        <div className="hidden md:block w-64 bg-gray-800 border-r border-gray-700 p-6 overflow-y-auto flex-shrink-0">
           <EmergencyFiltersComponent
             filters={filters}
             onFiltersChange={handleFiltersChange}
@@ -147,8 +181,58 @@ export function EmergencyDashboard() {
           />
         </div>
 
+        {/* Sidebar drawer no mobile */}
+        <Transition.Root show={sidebarOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-40 md:hidden" onClose={setSidebarOpen}>
+            <Transition.Child
+              as={Fragment}
+              enter="transition-opacity ease-linear duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity ease-linear duration-300"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black bg-opacity-50" />
+            </Transition.Child>
+            <div className="fixed inset-0 flex z-40">
+              <Transition.Child
+                as={Fragment}
+                enter="transition ease-in-out duration-300 transform"
+                enterFrom="-translate-x-full"
+                enterTo="translate-x-0"
+                leave="transition ease-in-out duration-300 transform"
+                leaveFrom="translate-x-0"
+                leaveTo="-translate-x-full"
+              >
+                <Dialog.Panel className="relative flex w-64 max-w-xs flex-1 flex-col bg-gray-800 border-r border-gray-700 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-white">Filtros</h2>
+                    <button
+                      type="button"
+                      className="text-gray-400 hover:text-white"
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <EmergencyFiltersComponent
+                    filters={filters}
+                    onFiltersChange={handleFiltersChange}
+                    responsibles={responsibles}
+                    locations={locations}
+                  />
+                </Dialog.Panel>
+              </Transition.Child>
+              <div className="w-0 flex-1" aria-hidden="true" />
+            </div>
+          </Dialog>
+        </Transition.Root>
+
         {/* Main content */}
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-2 md:p-6 overflow-y-auto">
           <div className="mb-6">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 text-center">
