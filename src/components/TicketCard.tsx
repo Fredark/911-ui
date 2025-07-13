@@ -130,7 +130,7 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
       </p>
       
       <div className="grid grid-cols-2 gap-4 mb-4 flex-grow">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
@@ -141,20 +141,6 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
             </div>
           </div>
           
-          {emergency.victim && (
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-              </svg>
-              <div className="min-w-0 flex-1">
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Vítima(s)</span>
-                <p className="text-sm font-medium text-white break-words whitespace-pre-line">{emergency.victim}</p>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        <div className="space-y-3">
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
@@ -164,14 +150,16 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
               <p className="text-sm font-medium text-white break-words whitespace-pre-line">{emergency.reporter}</p>
             </div>
           </div>
-          
+        </div>
+        
+        <div className="space-y-4">
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
             </svg>
             <div className="min-w-0 flex-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Criado</span>
-              <p className="text-sm font-medium text-white truncate">{formatDate(emergency.createdAt)}</p>
+              <p className="text-sm font-medium text-white break-words whitespace-pre-line">{formatDate(emergency.createdAt)}</p>
             </div>
           </div>
           
@@ -181,11 +169,25 @@ export function EmergencyCard({ emergency, onStatusChange }: EmergencyCardProps)
             </svg>
             <div className="min-w-0 flex-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Atualizado</span>
-              <p className="text-sm font-medium text-white truncate">{formatDate(emergency.updatedAt)}</p>
+              <p className="text-sm font-medium text-white break-words whitespace-pre-line">{formatDate(emergency.updatedAt)}</p>
             </div>
           </div>
         </div>
       </div>
+      
+      {emergency.victim && (
+        <div className="mb-4">
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+            </svg>
+            <div className="min-w-0 flex-1">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Vítima(s)</span>
+              <p className="text-sm font-medium text-white break-words whitespace-pre-line">{emergency.victim}</p>
+            </div>
+          </div>
+        </div>
+      )}
       
       {onStatusChange && (
         <div className="flex justify-end pt-3 border-t border-gray-700 mt-auto">

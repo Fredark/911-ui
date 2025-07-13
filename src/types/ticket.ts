@@ -10,6 +10,7 @@ export interface Emergency {
   createdAt: string;
   updatedAt: string;
   reporter: string;
+  confidenceLevel: string;
 }
 
 export interface EmergencyFilters {

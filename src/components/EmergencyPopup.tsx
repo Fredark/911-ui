@@ -55,7 +55,7 @@ export function EmergencyPopup({ emergency, onClose, autoClose = false }: Emerge
         setTimeout(() => {
           onClose();
         }, 300);
-      }, 5000);
+      }, 500);
 
       return () => clearTimeout(timer);
     }
