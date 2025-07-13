@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { Emergency, EmergencyFilters } from '../types/ticket';
 import { EmergencyService } from '../services/ticketService';
 import { EmergencyCard } from './TicketCard';
@@ -6,49 +7,41 @@ import { EmergencyFiltersComponent } from './TicketFilters';
 import { EmergencyPopup } from './EmergencyPopup';
 
 export function EmergencyDashboard() {
-  const [emergencies, setEmergencies] = useState<Emergency[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<EmergencyFilters>({});
   const [popups, setPopups] = useState<Emergency[]>([]);
+  const [emergencies, setEmergencies] = useState<Emergency[]>([]);
+  const [initialized, setInitialized] = useState(false);
 
-  const fetchEmergencies = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await EmergencyService.getEmergencies(filters);
-      
+  // Fetch emergencies with react-query polling
+  const {
+    data: fetchedEmergencies,
+    isLoading,
+    isError,
+    refetch,
+    error,
+  } = useQuery({
+    queryKey: ['emergencies', filters],
+    queryFn: () => EmergencyService.getEmergencies(filters),
+    refetchInterval: 5000,
+  });
+
+  // Update emergencies and popups when fetchedEmergencies changes
+  useEffect(() => {
+    if (fetchedEmergencies) {
+      setInitialized(true);
       setEmergencies(prevEmergencies => {
-        // Check for new emergencies
-        const newEmergencies = data.filter(newEmergency => 
-          !prevEmergencies.some(existing => existing.id === newEmergency.id)
+        // Detect new emergencies
+        const newEmergencies = fetchedEmergencies.filter((newEmergency: Emergency) =>
+          !prevEmergencies.some((existing: Emergency) => existing.id === newEmergency.id)
         );
-        
         // Show popup for new emergencies
-        newEmergencies.forEach(emergency => {
+        newEmergencies.forEach((emergency: Emergency) => {
           setPopups(prev => [...prev, emergency]);
         });
-        
-        return data;
+        return fetchedEmergencies;
       });
-    } catch (err) {
-      setError('Falha ao buscar emergências. Tente novamente.');
-      console.error('Error fetching emergencies:', err);
-    } finally {
-      setLoading(false);
     }
-  }, [filters]);
-
-  // Initial fetch and real-time updates every 5 seconds
-  useEffect(() => {
-    fetchEmergencies();
-    
-    const interval = setInterval(() => {
-      fetchEmergencies();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [fetchEmergencies]);
+  }, [fetchedEmergencies]);
 
   const handleStatusChange = async (emergencyId: string, newStatus: Emergency['status']) => {
     try {
@@ -105,14 +98,14 @@ export function EmergencyDashboard() {
     return { total, ativo, emAndamento, resolvido, finalizado };
   }, [emergencies]);
 
-  if (error) {
+  if (isError) {
     return (
       <div className="max-w-md mx-auto mt-16 p-8 bg-red-900 border border-red-700 rounded-xl text-center">
         <h2 className="text-xl font-semibold text-red-200 mb-2">Erro</h2>
-        <p className="text-red-300 mb-6">{error}</p>
+        <p className="text-red-300 mb-6">{(error as Error)?.message || 'Falha ao buscar emergências. Tente novamente.'}</p>
         <button 
           type="button"
-          onClick={fetchEmergencies} 
+          onClick={() => refetch()} 
           className="px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
         >
           Tentar Novamente
@@ -210,7 +203,7 @@ export function EmergencyDashboard() {
             </div>
           </div>
 
-          {loading ? (
+          {isLoading && !initialized ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mb-3"></div>
               <p className="text-gray-300 text-sm">Carregando emergências...</p>

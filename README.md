@@ -15,13 +15,13 @@ Um dashboard moderno e responsivo para monitoramento de ocorrências de emergên
 
 ## 🎯 Sobre o Projeto
 
-O Dashboard de Emergências é uma aplicação web desenvolvida para sistemas de emergência (911), permitindo o monitoramento em tempo real de ocorrências com interface intuitiva e design profissional. O sistema oferece uma visão clara e organizada de todas as emergências ativas, facilitando o trabalho dos operadores e coordenadores.
+Este é apenas um dashboard para demonstrar a aplicação de triagem de chamados de emergência em ação. Um dashboard simples para mostrar de forma visual como as interações com o usuário pelo WhatsApp são transformadas em chamados para a polícia ou responsáveis legais, após o processamento dos dados.
 
 ### Características Principais
 
-- **Interface Moderna**: Design dark mode com cores apropriadas para ambiente policial
-- **Tempo Real**: Atualizações automáticas a cada 5 segundos
-- **Notificações**: Popups animados para novas emergências
+- **Demonstração Visual**: Interface que mostra o fluxo de dados do WhatsApp para chamados
+- **Tempo Real**: Atualizações automáticas a cada 5 segundos simulando dados reais
+- **Notificações**: Popups animados para novas emergências recebidas
 - **Filtros Avançados**: Sistema de filtros por status, nível, responsável e localização
 - **Responsivo**: Funciona perfeitamente em desktop e dispositivos móveis
 
@@ -29,7 +29,7 @@ O Dashboard de Emergências é uma aplicação web desenvolvida para sistemas de
 
 ### 📊 Dashboard Principal
 - **Estatísticas em Tempo Real**: Contadores de emergências por status
-- **Cards Informativos**: Exibição detalhada de cada ocorrência
+- **Cards Informativos**: Exibição detalhada de cada ocorrência processada
 - **Status Dinâmico**: Alteração de status com dropdown sticky
 - **Layout Flexível**: Grid responsivo que se adapta ao conteúdo
 
@@ -41,7 +41,7 @@ O Dashboard de Emergências é uma aplicação web desenvolvida para sistemas de
 - **Sidebar Fixa**: Filtros sempre visíveis na lateral esquerda
 
 ### 🔔 Notificações
-- **Popups Animados**: Notificações deslizantes para novas emergências
+- **Popups Animados**: Notificações deslizantes para novas emergências recebidas
 - **Auto-remoção**: Popups desaparecem automaticamente após 5 segundos
 - **Fade Animation**: Animações suaves de entrada e saída
 - **Controle Manual**: Possibilidade de fechar popups manualmente
@@ -66,7 +66,8 @@ O Dashboard de Emergências é uma aplicação web desenvolvida para sistemas de
 
 ### Estrutura de Dados
 - **TypeScript Interfaces**: Tipagem forte para dados de emergência
-- **Mock Data**: Dados simulados para desenvolvimento e testes
+- **Mock Data**: Dados simulados para demonstrar o fluxo WhatsApp → Processamento → Dashboard
+- **Backend Integration**: Preparado para integração com backend que processa mensagens do WhatsApp
 
 ## 🚀 Instalação
 
@@ -103,16 +104,16 @@ O Dashboard de Emergências é uma aplicação web desenvolvida para sistemas de
 ## 📖 Como Usar
 
 ### Navegação Principal
-1. **Dashboard**: Visualize todas as emergências ativas
+1. **Dashboard**: Visualize todas as emergências processadas
 2. **Filtros**: Use a sidebar esquerda para filtrar ocorrências
 3. **Estatísticas**: Acompanhe os números no topo da página
-4. **Notificações**: Observe os popups para novas emergências
+4. **Notificações**: Observe os popups para novas emergências recebidas
 
-### Gerenciamento de Emergências
+### Demonstração do Fluxo
 1. **Visualizar Detalhes**: Clique em qualquer card para ver informações completas
 2. **Alterar Status**: Use o dropdown no final de cada card
 3. **Filtrar**: Utilize os filtros na sidebar para encontrar emergências específicas
-4. **Monitorar**: Acompanhe as atualizações em tempo real
+4. **Monitorar**: Acompanhe as atualizações em tempo real simulando dados do WhatsApp
 
 ### Funcionalidades dos Filtros
 - **Status**: Filtre por estado atual da emergência
@@ -132,9 +133,10 @@ O Dashboard de Emergências é uma aplicação web desenvolvida para sistemas de
 │   │   ├── TicketFilters.tsx       # Componente de filtros
 │   │   └── EmergencyPopup.tsx      # Popup de notificação
 │   ├── services/           # Serviços e APIs
-│   │   └── ticketService.ts        # Serviço de dados
+│   │   └── ticketService.ts        # Serviço de dados (mock)
 │   ├── types/              # Definições de tipos TypeScript
-│   │   └── ticket.ts              # Interfaces de dados
+│   │   ├── ticket.ts              # Interfaces de dados
+│   │   └── backend.ts             # Tipos para integração com backend
 │   ├── App.tsx             # Componente principal
 │   ├── main.tsx            # Ponto de entrada
 │   └── index.css           # Estilos globais
@@ -151,6 +153,7 @@ Crie um arquivo `.env` na raiz do projeto:
 ```env
 VITE_API_URL=http://localhost:3000/api
 VITE_UPDATE_INTERVAL=5000
+VITE_WHATSAPP_WEBHOOK_URL=http://localhost:3000/webhook
 ```
 
 ### Personalização de Cores
@@ -237,6 +240,11 @@ pnpm update       # Atualiza dependências
 - Adicione testes para novas funcionalidades
 - Documente mudanças importantes
 
+### Fluxo de Desenvolvimento
+- **Demonstração**: Mantenha o foco na demonstração visual do fluxo WhatsApp → Dashboard
+- **Integração**: Prepare para integração com backend de processamento de mensagens
+- **Testes**: Teste com dados simulados que representem mensagens reais do WhatsApp
+
 ### Estrutura de Commits
 ```
 feat: adiciona nova funcionalidade
@@ -246,6 +254,22 @@ style: formatação de código
 refactor: refatoração de código
 test: adiciona ou corrige testes
 ```
+
+## 🔄 Fluxo de Dados
+
+### Demonstração do Processamento
+Este dashboard demonstra como mensagens do WhatsApp são processadas:
+
+1. **Recebimento**: Mensagem chega via WhatsApp
+2. **Processamento**: Backend analisa e extrai informações
+3. **Triagem**: Sistema classifica por urgência e responsável
+4. **Dashboard**: Dados são exibidos em tempo real
+5. **Acompanhamento**: Status é atualizado conforme progresso
+
+### Integração Futura
+- **Webhook**: Preparado para receber dados do backend
+- **Real-time**: Atualizações automáticas simuladas
+- **Escalabilidade**: Estrutura pronta para produção
 
 ## 📄 Licença
 
