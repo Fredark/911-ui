@@ -10,16 +10,6 @@ const mapUrgencyLevel = (level: number): Emergency['level'] => {
   return 'MÍNIMA';
 };
 
-const mapStatus = (status: string): Emergency['status'] => {
-  const statusMap: Record<string, Emergency['status']> = {
-    'ativo': 'ATIVO',
-    'em_andamento': 'EM_ANDAMENTO',
-    'resolvido': 'RESOLVIDO',
-    'finalizado': 'FINALIZADO'
-  };
-  return statusMap[status.toLowerCase()] || 'ATIVO';
-};
-
 // Função para mapear emergency_type para responsável
 const mapEmergencyType = (types: string[]): string => {
   console.log('Mapping emergency_type:', types);
@@ -66,7 +56,7 @@ export const getEmergencies = async (filters?: EmergencyFilters): Promise<Emerge
       console.log('Mapped responsible:', responsible);
       return {
         id: item.id || String(Math.random()),
-        title: item.situation || 'Ocorrência',
+        title: 'Ocorrência',
         description: item.situation || 'Sem descrição',
         level: mapUrgencyLevel(item.urgency_level || 3),
         status: 'ATIVO', // ou outro status se disponível
